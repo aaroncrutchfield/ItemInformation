@@ -1,33 +1,22 @@
 package com.aaron.crutchfield.iteminformation.activity;
 
 import android.content.res.AssetManager;
-import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 
 import com.aaron.crutchfield.iteminformation.ItemListAdapter;
 import com.aaron.crutchfield.iteminformation.R;
 import com.aaron.crutchfield.iteminformation.data.ItemEntry;
-import com.aaron.crutchfield.iteminformation.data.ItemRepository;
 import com.aaron.crutchfield.iteminformation.viewModel.MainViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
-
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.util.Log;
-import android.util.Xml;
-import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
+import com.mancj.materialsearchbar.MaterialSearchBar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,24 +24,50 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+public class MainActivity extends AppCompatActivity implements MaterialSearchBar.OnSearchActionListener {
+
+    private MainViewModel viewModel;
+    private final ItemListAdapter adapter = new ItemListAdapter();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        MaterialSearchBar searchBar = findViewById(R.id.search_bar);
+        searchBar.setOnSearchActionListener(this);
+        searchBar.inflateMenu(R.menu.menu_main);
+        searchBar.setHint("Search an item number");
+        searchBar.addTextChangeListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -61,6 +76,25 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        List<ItemEntry> itemEntryList = initializeDatabase();
+
+        viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        viewModel.insertItemEntries(itemEntryList);
+
+        RecyclerView recyclerView = findViewById(R.id.rv_items_list);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        viewModel.getAllItems().observe(this, new Observer<List<ItemEntry>>() {
+            @Override
+            public void onChanged(@Nullable List<ItemEntry> itemEntries) {
+                viewModel.getAllItems().removeObserver(this);
+                adapter.updateList(itemEntries);
+            }
+        });
+    }
+
+    private List<ItemEntry> initializeDatabase() {
         String jsonString = null;
         AssetManager assetManager = getAssets();
 
@@ -96,34 +130,14 @@ public class MainActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
-        viewModel.insertItemEntries(itemEntryList);
-
-        RecyclerView recyclerView = findViewById(R.id.rv_items_list);
-        final ItemListAdapter adapter = new ItemListAdapter();
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        viewModel.getAllItems().observe(this, new Observer<List<ItemEntry>>() {
-            @Override
-            public void onChanged(@Nullable List<ItemEntry> itemEntries) {
-                adapter.updateList(itemEntries);
-            }
-        });
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    static String readFile(String path, Charset encoding)
-            throws IOException {
-        byte[] encoded = Files.readAllBytes(Paths.get(path));
-        return new String(encoded, encoding);
+        return itemEntryList;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
         return true;
     }
 
@@ -140,5 +154,27 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSearchStateChanged(boolean enabled) {
+
+    }
+
+    @Override
+    public void onSearchConfirmed(CharSequence text) {
+        final String itemNumber = "%" + text + "%";
+        viewModel.getByLikeItemNumbers(itemNumber).observe(this, new Observer<List<ItemEntry>>() {
+            @Override
+            public void onChanged(@Nullable List<ItemEntry> itemEntryList) {
+                viewModel.getByLikeItemNumbers(itemNumber).removeObserver(this);
+                adapter.updateList(itemEntryList);
+            }
+        });
+    }
+
+    @Override
+    public void onButtonClicked(int buttonCode) {
+
     }
 }

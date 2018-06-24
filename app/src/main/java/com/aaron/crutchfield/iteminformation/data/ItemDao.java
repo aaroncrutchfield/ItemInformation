@@ -23,10 +23,10 @@ public interface ItemDao {
     @Query("SELECT * FROM itementry WHERE item = :item")
     LiveData<ItemEntry> getByItemNumber(String item);
 
-    @Query("SELECT * FROM itementry WHERE item LIKE + '%' + :item + '%' ORDER BY item")
+    @Query("SELECT * FROM itementry WHERE item LIKE + :item ORDER BY item")
     LiveData<List<ItemEntry>> getByLikeItemNumbers(String item);
 
-    @Query("SELECT * FROM itementry WHERE description LIKE + '%' + :description + '%' ORDER BY item")
+    @Query("SELECT * FROM itementry WHERE description LIKE + :description ORDER BY item")
     LiveData<List<ItemEntry>> getByLikeDescription(String description);
 
     @Query("SELECT * FROM itementry WHERE default_location = :defaultLocation ORDER BY item")
