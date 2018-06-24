@@ -58,7 +58,14 @@ public class MainActivity extends AppCompatActivity implements MaterialSearchBar
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+                final String itemNumber = "%" + charSequence + "%";
+                viewModel.getByLikeItemNumbers(itemNumber).observe(MainActivity.this, new Observer<List<ItemEntry>>() {
+                    @Override
+                    public void onChanged(@Nullable List<ItemEntry> itemEntryList) {
+                        viewModel.getByLikeItemNumbers(itemNumber).removeObserver(this);
+                        adapter.updateList(itemEntryList);
+                    }
+                });
             }
 
             @Override
@@ -163,14 +170,7 @@ public class MainActivity extends AppCompatActivity implements MaterialSearchBar
 
     @Override
     public void onSearchConfirmed(CharSequence text) {
-        final String itemNumber = "%" + text + "%";
-        viewModel.getByLikeItemNumbers(itemNumber).observe(this, new Observer<List<ItemEntry>>() {
-            @Override
-            public void onChanged(@Nullable List<ItemEntry> itemEntryList) {
-                viewModel.getByLikeItemNumbers(itemNumber).removeObserver(this);
-                adapter.updateList(itemEntryList);
-            }
-        });
+
     }
 
     @Override
