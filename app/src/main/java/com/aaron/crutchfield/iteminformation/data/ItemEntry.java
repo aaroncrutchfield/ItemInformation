@@ -23,26 +23,26 @@ public class ItemEntry {
     private int planner;
     @ColumnInfo
     private String unit;
-    @ColumnInfo(name = "default_location")
-    private String defaultLocation;
+    @ColumnInfo
+    private String default_location;
     @ColumnInfo
     private String customer;
-    @ColumnInfo(name = "primary_production_line")
-    private String primaryProductionLine;
+    @ColumnInfo
+    private String primary_production_line;
 
     ItemEntry() {
 
     }
 
     @Ignore
-    public ItemEntry(@NonNull String item, String description, int warehouse, int planner, String defaultLocation, String customer, String primaryProductionLine) {
+    public ItemEntry(@NonNull String item, String description, int warehouse, int planner, String default_location, String customer, String primary_production_line) {
         this.item = item;
         this.description = description;
         this.warehouse = warehouse;
         this.planner = planner;
-        this.defaultLocation = defaultLocation;
+        this.default_location = default_location;
         this.customer = customer;
-        this.primaryProductionLine = primaryProductionLine;
+        this.primary_production_line = primary_production_line;
     }
 
     public String getItem() {
@@ -77,12 +77,12 @@ public class ItemEntry {
         this.planner = planner;
     }
 
-    public String getDefaultLocation() {
-        return defaultLocation;
+    public String getDefault_location() {
+        return default_location;
     }
 
-    public void setDefaultLocation(String defaultLocation) {
-        this.defaultLocation = defaultLocation;
+    public void setDefault_location(String default_location) {
+        this.default_location = default_location;
     }
 
     public String getCustomer() {
@@ -93,12 +93,12 @@ public class ItemEntry {
         this.customer = customer;
     }
 
-    public String getPrimaryProductionLine() {
-        return primaryProductionLine;
+    public String getPrimary_production_line() {
+        return primary_production_line;
     }
 
-    public void setPrimaryProductionLine(String primaryProductionLine) {
-        this.primaryProductionLine = primaryProductionLine;
+    public void setPrimary_production_line(String primary_production_line) {
+        this.primary_production_line = primary_production_line;
     }
 
     public String getUnit() {
@@ -107,5 +107,19 @@ public class ItemEntry {
 
     public void setUnit(String unit) {
         this.unit = unit;
+    }
+
+    @Override
+    public String toString() {
+        return "ItemEntry{" +
+                "item='" + item + '\'' +
+                ", description='" + description + '\'' +
+                ", warehouse=" + warehouse +
+                ", planner=" + planner +
+                ", unit='" + unit + '\'' +
+                ", default_location='" + default_location + '\'' +
+                ", customer='" + customer + '\'' +
+                ", primary_production_line='" + primary_production_line + '\'' +
+                '}';
     }
 }

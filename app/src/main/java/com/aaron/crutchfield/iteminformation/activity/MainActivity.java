@@ -4,7 +4,6 @@ import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -102,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements MaterialSearchBar
     }
 
     private List<ItemEntry> initializeDatabase() {
+        // TODO: 6/24/2018 initializeDatabase() - Move this logic to the Repository Class?
         String jsonString = null;
         AssetManager assetManager = getAssets();
 
@@ -118,9 +118,7 @@ public class MainActivity extends AppCompatActivity implements MaterialSearchBar
             // byte buffer into a string
             jsonString = new String(buffer);
 
-            Log.d("MainActivity", "onCreate: " + jsonString.substring(0, 300));
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 

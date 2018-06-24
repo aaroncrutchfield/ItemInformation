@@ -66,8 +66,8 @@ public class ItemListAdapter extends RecyclerView.Adapter<ItemListAdapter.ItemLi
             ItemEntry itemEntry = itemEntryList.get(position);
             tvItem.setText(itemEntry.getItem());
             tvDescription.setText(itemEntry.getDescription());
-            tvLocation.setText(itemEntry.getDefaultLocation());
-            Log.d("ItemListViewHolder", "bindView: " + itemEntry.getDefaultLocation());
+            tvLocation.setText(itemEntry.getDefault_location());
+            Log.d("ItemListViewHolder", "bindView: " + itemEntry.getDefault_location());
         }
     }
 }

@@ -9,7 +9,7 @@ import androidx.room.RoomDatabase;
 /**
  * Created by Aaron Crutchfield on 6/19/2018.
  */
-@Database(entities = {ItemEntry.class}, version = 6, exportSchema = false)
+@Database(entities = {ItemEntry.class}, version = 7, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static final Object LOCK = new Object();
